@@ -1,5 +1,11 @@
 package org.example.dataprocessor;
 
+import org.example.dataprocessor.Analysis.AnalysisInterface;
+import org.example.dataprocessor.Cleaning.CleaningInterface;
+import org.example.dataprocessor.Factory.AnalysisFactory;
+import org.example.dataprocessor.Factory.CleanFactory;
+import org.example.dataprocessor.Factory.OutputFactory;
+import org.example.dataprocessor.Output.OutputInterface;
 import org.example.dataprocessor.enums.AnalysisType;
 import org.example.dataprocessor.enums.CleaningType;
 import org.example.dataprocessor.enums.OutputType;
@@ -38,7 +44,25 @@ public class DataProcessorService {
         // 3) Output according to outputType (console or target/result.txt).
         // 4) Return the numeric result.
 
-        throw new UnsupportedOperationException("Student must implement process(...)");
+        if (data == null) {
+            data = Collections.emptyList(); // Handle null input gracefully.
+        }
+            List<Integer> copy=new ArrayList<>(data);
+
+
+            AnalysisInterface analysis= AnalysisFactory.CreateAnalysis(analysisType);
+            CleaningInterface cleaning= CleanFactory.CreateCleaning(cleaningType);
+            OutputInterface output= OutputFactory.CreateOutput(outputType);
+
+        if (analysis == null || cleaning == null || output == null) {
+            throw new UnsupportedOperationException("Student must implement process(...)");
+        }
+
+            List<Integer> cleandata = cleaning.clean(copy);
+            double result=analysis.analyze(cleandata);
+            output.output(result);
+            return result;
+
     }
 }
 
